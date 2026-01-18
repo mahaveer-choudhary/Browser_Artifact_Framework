@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser Artifact Framework (BAF)</title>
+    <meta name="description" content="Browser secrets extraction and analysis dashboard">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+    <!-- <link rel="stylesheet" href="/static/css/style.css"> -->
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <i class="fa-solid fa-user-secret"></i>
+                <span>Browser Artifact Framework</span>
+                <!-- <span>DBS.py</span> -->
+            </div>
+
+            <nav class="nav-menu">
+                <h3>Browsers</h3>
+                <button class="nav-btn active" data-browser="chrome" onclick="loadBrowser('chrome')">
+                    <i class="fa-brands fa-chrome"></i> Chrome
+                </button>
+                <button class="nav-btn" data-browser="edge" onclick="loadBrowser('edge')">
+                    <i class="fa-brands fa-edge"></i> Edge
+                </button>
+                <button class="nav-btn" data-browser="firefox" onclick="loadBrowser('firefox')">
+                    <i class="fa-brands fa-firefox-browser"></i> Firefox
+                </button>
+                <button class="nav-btn" data-browser="brave" onclick="loadBrowser('brave')">
+                    <i class="fa-brands fa-brave"></i> Brave
+                </button>
+            </nav>
+
+            <div class="actions">
+                <button class="extract-btn" id="extractBtn" onclick="extractCurrentBrowser()">
+                    <i class="fa-solid fa-bolt"></i> RUN EXTRACTION
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="content-area">
+            <header>
+                <h1 id="currentBrowserTitle">Chrome Data</h1>
+                <div class="status-bar" id="statusBar">Ready</div>
+            </header>
+
+            <!-- Stats Row -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="icon"><i class="fa-solid fa-key"></i></div>
+                    <div class="info">
+                        <span class="label">Logins Found</span>
+                        <strong class="value" id="countLogins">0</strong>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon"><i class="fa-solid fa-cookie-bite"></i></div>
+                    <div class="info">
+                        <span class="label">Cookies</span>
+                        <strong class="value" id="countCookies">0</strong>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                    <div class="info">
+                        <span class="label">History</span>
+                        <strong class="value" id="countHistory">0</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('logins')">
+                    <i class="fa-solid fa-key"></i> Logins
+                </button>
+                <button class="tab-btn" onclick="switchTab('cookies')">
+                    <i class="fa-solid fa-cookie-bite"></i> Cookies
+                </button>
+                <button class="tab-btn" onclick="switchTab('history')">
+                    <i class="fa-solid fa-clock-rotate-left"></i> History
+                </button>
+
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="searchInput" placeholder="Search decrypted data..." autocomplete="off">
+                </div>
+            </div>
+
+            <!-- Data Table Container -->
+            <div class="table-container">
+                <!-- Logins Table -->
+                <div id="view-logins" class="data-view active" style="display: block;">
+                    <table class="cyber-table">
+                        <thead>
+                            <tr>
+                                <th><i class="fa-solid fa-globe"></i> URL / Origin</th>
+                                <th><i class="fa-solid fa-user"></i> Username</th>
+                                <th><i class="fa-solid fa-lock"></i> Password</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-logins">
+                            <!-- Dynamic Data -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Cookies Table -->
+                <div id="view-cookies" class="data-view" style="display: none;">
+                    <table class="cyber-table">
+                        <thead>
+                            <tr>
+                                <th><i class="fa-solid fa-server"></i> Host</th>
+                                <th><i class="fa-solid fa-tag"></i> Name</th>
+                                <th><i class="fa-solid fa-code"></i> Value</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-cookies">
+                            <!-- Dynamic Data -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- History Table -->
+                <div id="view-history" class="data-view" style="display: none;">
+                    <table class="cyber-table">
+                        <thead>
+                            <tr>
+                                <th><i class="fa-solid fa-link"></i> URL</th>
+                                <th><i class="fa-solid fa-heading"></i> Title</th>
+                                <th><i class="fa-solid fa-eye"></i> Visits</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-history">
+                            <!-- Dynamic Data -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <!-- <script src="/static/js/app.js"></script> -->
+    <script src="app.js"></script>
+</body>
+
+</html>
