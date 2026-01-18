@@ -32,8 +32,11 @@
 
 1.  **Clone the Repository**:
     ```bash
-    git clone https://github.com/mahaveer-choudhary/Browser-Artifact-Framework.git
-    cd Browser-Artifact-Framework
+    git clone https://github.com/mahaveer-choudhary/Browser_Artifact_Framework.git
+    
+    ```
+    ```bash
+    cd Browser_Artifact_Framework
     ```
 
 2.  **Install Dependencies**:
