@@ -35,11 +35,14 @@
     git clone https://github.com/mahaveer-choudhary/Browser_Artifact_Framework.git
     
     ```
+
+2. **Change the Repository**:
     ```bash
     cd Browser_Artifact_Framework
+    
     ```
 
-2.  **Install Dependencies**:
+3.  **Install Dependencies**:
     ```bash
     pip install flask pywin32
     ```
