@@ -8,6 +8,7 @@ from utils.config import BrowserType, FILE_TYPE_COOKIES, FILE_TYPE_HISTORY, FILE
 from utils.common import get_browser_path, get_browser_data_file
 from utils.crypto import decrypt_dpapi, decrypt_chromium_v10, decrypt_chromium_v20
 from utils.injector import Injector
+from utils.time_utils import webkit_to_datetime
 
 import win32file
 
@@ -299,7 +300,7 @@ class ChromiumExtractor:
                     "url": url,
                     "title": title,
                     "visit_count": count,
-                    "last_visit_time": last_visit
+                    "last_visit_time": webkit_to_datetime(last_visit)
                 })
             conn.close()
         except Exception as e:

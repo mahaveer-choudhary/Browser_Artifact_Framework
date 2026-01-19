@@ -16,7 +16,6 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="style.css">
-    <!-- <link rel="stylesheet" href="/static/css/style.css"> -->
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -27,90 +26,153 @@
 </head>
 
 <body>
+    <!-- Animated Background Grid -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
     <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar">
+            <div class="sidebar-glow"></div>
             <div class="logo-area">
-                <i class="fa-solid fa-user-secret"></i>
-                <span>Browser Artifact Framework</span>
-                <!-- <span>DBS.py</span> -->
+                <div class="logo-icon">
+                    <i class="fa-solid fa-user-secret"></i>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-title">BAF</span>
+                    <span class="logo-subtitle">Browser Artifact Framework</span>
+                </div>
             </div>
 
             <nav class="nav-menu">
-                <h3>Browsers</h3>
+                <h3><span class="nav-indicator"></span>Browsers</h3>
                 <button class="nav-btn active" data-browser="chrome" onclick="loadBrowser('chrome')">
-                    <i class="fa-brands fa-chrome"></i> Chrome
+                    <i class="fa-brands fa-chrome"></i>
+                    <span>Chrome</span>
+                    <span class="nav-arrow"><i class="fa-solid fa-chevron-right"></i></span>
                 </button>
                 <button class="nav-btn" data-browser="edge" onclick="loadBrowser('edge')">
-                    <i class="fa-brands fa-edge"></i> Edge
+                    <i class="fa-brands fa-edge"></i>
+                    <span>Edge</span>
+                    <span class="nav-arrow"><i class="fa-solid fa-chevron-right"></i></span>
                 </button>
                 <button class="nav-btn" data-browser="firefox" onclick="loadBrowser('firefox')">
-                    <i class="fa-brands fa-firefox-browser"></i> Firefox
+                    <i class="fa-brands fa-firefox-browser"></i>
+                    <span>Firefox</span>
+                    <span class="nav-arrow"><i class="fa-solid fa-chevron-right"></i></span>
                 </button>
                 <button class="nav-btn" data-browser="brave" onclick="loadBrowser('brave')">
-                    <i class="fa-brands fa-brave"></i> Brave
+                    <i class="fa-brands fa-brave"></i>
+                    <span>Brave</span>
+                    <span class="nav-arrow"><i class="fa-solid fa-chevron-right"></i></span>
                 </button>
             </nav>
 
             <div class="actions">
-                <button class="extract-btn" id="extractBtn" onclick="extractCurrentBrowser()">
-                    <i class="fa-solid fa-bolt"></i> RUN EXTRACTION
+                <button class="extract-btn primary" id="extractBtn" onclick="extractCurrentBrowser()">
+                    <div class="btn-glow"></div>
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>RUN EXTRACTION</span>
                 </button>
+                <button class="extract-btn secondary" id="exportBtn" onclick="exportReport()">
+                    <i class="fa-solid fa-file-export"></i>
+                    <span>EXPORT REPORT</span>
+                </button>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="version-badge">v2.0</div>
             </div>
         </aside>
 
         <!-- Main Content -->
         <main class="content-area">
             <header>
-                <h1 id="currentBrowserTitle">Chrome Data</h1>
-                <div class="status-bar" id="statusBar">Ready</div>
+                <div class="header-left">
+                    <h1 id="currentBrowserTitle">Chrome Data</h1>
+                    <p class="header-desc">Extracted browser artifacts and credentials</p>
+                </div>
+                <div class="status-bar" id="statusBar">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Ready</span>
+                </div>
             </header>
 
             <!-- Stats Row -->
             <div class="stats-row">
-                <div class="stat-card">
-                    <div class="icon"><i class="fa-solid fa-key"></i></div>
-                    <div class="info">
-                        <span class="label">Logins Found</span>
-                        <strong class="value" id="countLogins">0</strong>
+                <div class="stat-card" data-type="logins">
+                    <div class="stat-bg"></div>
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-key"></i>
                     </div>
+                    <div class="stat-info">
+                        <span class="stat-label">Logins Found</span>
+                        <strong class="stat-value" id="countLogins">0</strong>
+                    </div>
+                    <div class="stat-decoration"></div>
                 </div>
-                <div class="stat-card">
-                    <div class="icon"><i class="fa-solid fa-cookie-bite"></i></div>
-                    <div class="info">
-                        <span class="label">Cookies</span>
-                        <strong class="value" id="countCookies">0</strong>
+                <div class="stat-card" data-type="cookies">
+                    <div class="stat-bg"></div>
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-cookie-bite"></i>
                     </div>
+                    <div class="stat-info">
+                        <span class="stat-label">Cookies</span>
+                        <strong class="stat-value" id="countCookies">0</strong>
+                    </div>
+                    <div class="stat-decoration"></div>
                 </div>
-                <div class="stat-card">
-                    <div class="icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                    <div class="info">
-                        <span class="label">History</span>
-                        <strong class="value" id="countHistory">0</strong>
+                <div class="stat-card" data-type="history">
+                    <div class="stat-bg"></div>
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
                     </div>
+                    <div class="stat-info">
+                        <span class="stat-label">History</span>
+                        <strong class="stat-value" id="countHistory">0</strong>
+                    </div>
+                    <div class="stat-decoration"></div>
                 </div>
             </div>
 
             <!-- Tabs -->
-            <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('logins')">
-                    <i class="fa-solid fa-key"></i> Logins
-                </button>
-                <button class="tab-btn" onclick="switchTab('cookies')">
-                    <i class="fa-solid fa-cookie-bite"></i> Cookies
-                </button>
-                <button class="tab-btn" onclick="switchTab('history')">
-                    <i class="fa-solid fa-clock-rotate-left"></i> History
-                </button>
+            <div class="tabs-wrapper">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('logins')">
+                        <i class="fa-solid fa-key"></i>
+                        <span>Logins</span>
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('cookies')">
+                        <i class="fa-solid fa-cookie-bite"></i>
+                        <span>Cookies</span>
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('history')">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <span>History</span>
+                    </button>
+                </div>
 
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="searchInput" placeholder="Search decrypted data..." autocomplete="off">
+                <div class="tabs-controls">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="searchInput" placeholder="Search decrypted data..." autocomplete="off">
+                        <kbd>⌘K</kbd>
+                    </div>
+                    <div class="sort-box">
+                        <select id="historySort" onchange="sortHistory()">
+                            <option value="default">Sort: Default</option>
+                            <option value="visits">Most Visited</option>
+                            <option value="recent">Recently Visited</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
             <!-- Data Table Container -->
             <div class="table-container">
+                <div class="table-glow"></div>
+
                 <!-- Logins Table -->
                 <div id="view-logins" class="data-view active" style="display: block;">
                     <table class="cyber-table">
@@ -150,6 +212,7 @@
                             <tr>
                                 <th><i class="fa-solid fa-link"></i> URL</th>
                                 <th><i class="fa-solid fa-heading"></i> Title</th>
+                                <th><i class="fa-regular fa-clock"></i> Last Visit</th>
                                 <th><i class="fa-solid fa-eye"></i> Visits</th>
                             </tr>
                         </thead>
@@ -162,8 +225,111 @@
         </main>
     </div>
 
+    <!-- Export Modal -->
+    <div id="exportModal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fa-solid fa-file-export"></i>
+                    <h2>Export Options</h2>
+                </div>
+                <button class="close-modal" onclick="closeExportModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <p class="modal-section-title">
+                        <span class="section-number">1</span>
+                        Select Browsers
+                    </p>
+                    <div class="checkbox-group browser-grid">
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="browser-opt" value="chrome" checked>
+                            <span class="checkbox-custom"></span>
+                            <i class="fa-brands fa-chrome"></i>
+                            <span>Chrome</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="browser-opt" value="edge" checked>
+                            <span class="checkbox-custom"></span>
+                            <i class="fa-brands fa-edge"></i>
+                            <span>Edge</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="browser-opt" value="firefox" checked>
+                            <span class="checkbox-custom"></span>
+                            <i class="fa-brands fa-firefox-browser"></i>
+                            <span>Firefox</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="browser-opt" value="brave" checked>
+                            <span class="checkbox-custom"></span>
+                            <i class="fa-brands fa-brave"></i>
+                            <span>Brave</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="browser-opt" value="opera" checked>
+                            <span class="checkbox-custom"></span>
+                            <i class="fa-brands fa-opera"></i>
+                            <span>Opera</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="browser-opt" value="vivaldi" checked>
+                            <span class="checkbox-custom"></span>
+                            <i class="fa-solid fa-globe"></i>
+                            <span>Vivaldi</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="modal-section">
+                    <p class="modal-section-title">
+                        <span class="section-number">2</span>
+                        Select Data Types
+                    </p>
+                    <div class="checkbox-group data-types">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="opt-logins" checked>
+                            <span class="checkbox-custom"></span>
+                            <i class="fa-solid fa-key"></i>
+                            <span>Logins</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="opt-cookies" checked>
+                            <span class="checkbox-custom"></span>
+                            <i class="fa-solid fa-cookie-bite"></i>
+                            <span>Cookies</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="opt-history" checked>
+                            <span class="checkbox-custom"></span>
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                            <span>Full History</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="opt-top10" checked>
+                            <span class="checkbox-custom"></span>
+                            <i class="fa-solid fa-ranking-star"></i>
+                            <span>Top 10 Most Visited</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeExportModal()">
+                    <span>Cancel</span>
+                </button>
+                <button class="btn-confirm" onclick="confirmExport()">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Export & Download</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
-    <!-- <script src="/static/js/app.js"></script> -->
     <script src="app.js"></script>
 </body>
 
