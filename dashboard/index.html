@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser Artifact Framework (BAF)</title>
+    <meta name="description" content="Browser secrets extraction and analysis dashboard">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>">
+</head>
+
+<body>
+    <!-- Animated Background Grid -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-glow"></div>
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-user-secret"></i>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-title">BAF</span>
+                    <span class="logo-subtitle">Browser Artifact Framework</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <h3><span class="nav-indicator"></span>Browsers</h3>
+                <button class="nav-btn active" data-browser="chrome" onclick="loadBrowser('chrome')">
+                    <i class="fa-brands fa-chrome"></i>
+                    <span>Chrome</span>
+                    <span class="nav-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+                </button>
+                <button class="nav-btn" data-browser="edge" onclick="loadBrowser('edge')">
+                    <i class="fa-brands fa-edge"></i>
+                    <span>Edge</span>
+                    <span class="nav-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+                </button>
+                <button class="nav-btn" data-browser="firefox" onclick="loadBrowser('firefox')">
+                    <i class="fa-brands fa-firefox-browser"></i>
+                    <span>Firefox</span>
+                    <span class="nav-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+                </button>
+                <button class="nav-btn" data-browser="brave" onclick="loadBrowser('brave')">
+                    <i class="fa-brands fa-brave"></i>
+                    <span>Brave</span>
+                    <span class="nav-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+                </button>
+            </nav>
+
+            <div class="actions">
+                <button class="extract-btn primary" id="extractBtn" onclick="extractCurrentBrowser()">
+                    <div class="btn-glow"></div>
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>RUN EXTRACTION</span>
+                </button>
+                <button class="extract-btn secondary" onclick="openEdiscoveryModal()" style="margin-top: 10px; background: rgba(0, 255, 157, 0.1); border-color: rgba(0, 255, 157, 0.3); color: var(--accent-cyan);">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span>eDISCOVERY</span>
+                </button>
+                <button class="extract-btn secondary" id="exportBtn" onclick="openExportModal()" style="margin-top: 10px;">
+                    <i class="fa-solid fa-file-export"></i>
+                    <span>EXPORT REPORT</span>
+                </button>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="version-badge">v2.0</div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="content-area">
+            <header>
+                <div class="header-left">
+                    <h1 id="currentBrowserTitle">Chrome Data</h1>
+                    <p class="header-desc">Extracted browser artifacts and credentials</p>
+                </div>
+                <div class="status-bar" id="statusBar">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Ready</span>
+                </div>
+            </header>
+
+            <!-- Stats Row -->
+            <div class="stats-row">
+                <div class="stat-card" data-type="logins">
+                    <div class="stat-bg"></div>
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-key"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">Logins Found</span>
+                        <strong class="stat-value" id="countLogins">0</strong>
+                    </div>
+                    <div class="stat-decoration"></div>
+                </div>
+                <div class="stat-card" data-type="cookies">
+                    <div class="stat-bg"></div>
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-cookie-bite"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">Cookies</span>
+                        <strong class="stat-value" id="countCookies">0</strong>
+                    </div>
+                    <div class="stat-decoration"></div>
+                </div>
+                <div class="stat-card" data-type="history">
+                    <div class="stat-bg"></div>
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">History</span>
+                        <strong class="stat-value" id="countHistory">0</strong>
+                    </div>
+                    <div class="stat-decoration"></div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs-wrapper">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('logins')">
+                        <i class="fa-solid fa-key"></i>
+                        <span>Logins</span>
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('cookies')">
+                        <i class="fa-solid fa-cookie-bite"></i>
+                        <span>Cookies</span>
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('history')">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <span>History</span>
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('intel')">
+                        <i class="fa-solid fa-brain"></i>
+                        <span>Intelligence</span>
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('system')">
+                        <i class="fa-solid fa-laptop-code"></i>
+                        <span>System OS</span>
+                    </button>
+                </div>
+
+                <div class="tabs-controls">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="searchInput" placeholder="Search decrypted data..." autocomplete="off">
+                        <kbd>⌘K</kbd>
+                    </div>
+                    <div class="sort-box">
+                        <select id="historySort" onchange="sortHistory()">
+                            <option value="default">Sort: Default</option>
+                            <option value="visits">Most Visited</option>
+                            <option value="recent">Recently Visited</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Table Container -->
+            <div class="table-container">
+                <div class="table-glow"></div>
+
+                <!-- Logins Table -->
+                <div id="view-logins" class="data-view active" style="display: block;">
+                    <table class="cyber-table">
+                        <thead>
+                            <tr>
+                                <th><i class="fa-solid fa-globe"></i> URL / Origin</th>
+                                <th><i class="fa-solid fa-user"></i> Username</th>
+                                <th><i class="fa-solid fa-lock"></i> Password</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-logins">
+                            <!-- Dynamic Data -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Cookies Table -->
+                <div id="view-cookies" class="data-view" style="display: none;">
+                    <table class="cyber-table">
+                        <thead>
+                            <tr>
+                                <th><i class="fa-solid fa-server"></i> Host</th>
+                                <th><i class="fa-solid fa-tag"></i> Name</th>
+                                <th><i class="fa-solid fa-code"></i> Value</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-cookies">
+                            <!-- Dynamic Data -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- History Table -->
+                <div id="view-history" class="data-view" style="display: none;">
+                    <table class="cyber-table">
+                        <thead>
+                            <tr>
+                                <th><i class="fa-solid fa-link"></i> URL</th>
+                                <th><i class="fa-solid fa-heading"></i> Title</th>
+                                <th><i class="fa-regular fa-clock"></i> Last Visit</th>
+                                <th><i class="fa-solid fa-eye"></i> Visits</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-history">
+                            <!-- Dynamic Data -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Intelligence Table -->
+                <div id="view-intel" class="data-view" style="display: none;">
+                    <div id="intel-content" style="color: white; padding: 20px;">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+
+                <!-- System OS Table -->
+                <div id="view-system" class="data-view" style="display: none;">
+                    <div style="padding: 20px 20px 0 20px; display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0; color: var(--accent-cyan); font-size: 1.5rem;"><i class="fa-solid fa-laptop-code"></i> Windows System Artifacts</h2>
+                        <button class="refresh-btn" onclick="fetchSystemArtifacts()"><i class="fa-solid fa-rotate-right"></i> Refresh OS Data</button>
+                    </div>
+                    <div id="system-content" style="color: white; padding: 20px;">
+                        <div class="empty-state">
+                            <i class="fa-solid fa-laptop" style="font-size: 3rem; color: var(--text-dim); margin-bottom: 1rem;"></i>
+                            <p>Click "Refresh OS Data" to load Windows system artifacts (Wi-Fi, USB, BAM).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Export Modal -->
+    <div id="exportModal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fa-solid fa-file-export"></i>
+                    <h2>Export Options</h2>
+                </div>
+                <button class="close-modal" onclick="closeExportModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <p class="modal-section-title">
+                        <span class="section-number">1</span>
+                        Select Browsers
+                    </p>
+                    <div class="checkbox-group browser-grid">
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="browser-opt" value="chrome" checked>
+                            <span class="checkbox-custom"></span>
+                            <i class="fa-brands fa-chrome"></i>
+                            <span>Chrome</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="browser-opt" value="edge" checked>
+                            <span class="checkbox-custom"></span>
+                            <i class="fa-brands fa-edge"></i>
+                            <span>Edge</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="browser-opt" value="firefox" checked>
+                            <span class="checkbox-custom"></span>
+                            <i class="fa-brands fa-firefox-browser"></i>
+                            <span>Firefox</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="browser-opt" value="brave" checked>
+                            <span class="checkbox-custom"></span>
+                            <i class="fa-brands fa-brave"></i>
+                            <span>Brave</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="browser-opt" value="opera" checked>
+                            <span class="checkbox-custom"></span>
+                            <i class="fa-brands fa-opera"></i>
+                            <span>Opera</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="browser-opt" value="vivaldi" checked>
+                            <span class="checkbox-custom"></span>
+                            <i class="fa-solid fa-globe"></i>
+                            <span>Vivaldi</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="modal-section">
+                    <p class="modal-section-title">
+                        <span class="section-number">2</span>
+                        Select Data Types
+                    </p>
+                    <div class="checkbox-group data-types">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="opt-logins" checked>
+                            <span class="checkbox-custom"></span>
+                            <i class="fa-solid fa-key"></i>
+                            <span>Logins</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="opt-cookies" checked>
+                            <span class="checkbox-custom"></span>
+                            <i class="fa-solid fa-cookie-bite"></i>
+                            <span>Cookies</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="opt-history" checked>
+                            <span class="checkbox-custom"></span>
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                            <span>Full History</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="opt-top10" checked>
+                            <span class="checkbox-custom"></span>
+                            <i class="fa-solid fa-ranking-star"></i>
+                            <span>Top 10 Most Visited</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="opt-system" checked>
+                            <span class="checkbox-custom"></span>
+                            <i class="fa-solid fa-laptop-code"></i>
+                            <span>System OS Artifacts</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="modal-section">
+                    <p class="modal-section-title">
+                        <span class="section-number">3</span>
+                        Select Format
+                    </p>
+                    <div style="padding: 10px 0;">
+                        <select id="exportFormat" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-subtle); background: var(--bg-card-solid); color: #e6edf3; font-family: var(--font-sans);">
+                            <option value="pdf">Professional PDF Report</option>
+                            <option value="xlsx">Advanced Excel Workbook (.xlsx)</option>
+                            <option value="zip">Full ZIP Bundle (PDF, CSV, Raw JSONs)</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeExportModal()">
+                    <span>Cancel</span>
+                </button>
+                <button class="btn-confirm" onclick="confirmExport()">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Export & Download</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- eDiscovery Modal -->
+    <div id="ediscoveryModal" class="modal">
+        <div class="modal-backdrop" onclick="closeEdiscoveryModal()"></div>
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fa-solid fa-magnifying-glass" style="color: var(--accent-cyan);"></i>
+                    <h2>Global eDiscovery Search</h2>
+                </div>
+                <button class="close-modal" onclick="closeEdiscoveryModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="display:flex; gap: 10px; margin-bottom: 20px;">
+                    <input type="text" id="ediscoveryInput" placeholder="Enter keyword to search across all browsers..." style="flex:1; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-subtle); color: #fff; border-radius: 6px; font-family: var(--font-mono); font-size: 1rem;" onkeypress="if(event.key === 'Enter') runEdiscovery()">
+                    <button onclick="runEdiscovery()" style="padding: 12px 24px; background: rgba(0, 255, 157, 0.1); border: 1px solid var(--accent-cyan); border-radius: 6px; color: var(--accent-cyan); font-weight: bold; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='var(--accent-cyan)'; this.style.color='#000';" onmouseout="this.style.background='rgba(0, 255, 157, 0.1)'; this.style.color='var(--accent-cyan)';">
+                        <i class="fa-solid fa-search"></i> Search
+                    </button>
+                </div>
+                <div id="ediscoveryResults" style="max-height: 50vh; overflow-y: auto; text-align: left; background: rgba(0,0,0,0.2); border-radius: 6px; border: 1px solid var(--border-subtle);">
+                    <div style="padding: 30px; text-align: center; color: var(--text-dim);">
+                        <i class="fa-solid fa-database" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.5;"></i>
+                        <p>Search applies to all extracted data across all browsers.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+</body>
+
+</html>
